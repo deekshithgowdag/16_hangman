@@ -8,6 +8,7 @@ class HangmanGame:
         self.score = 0
         self.streak = 0
         self.category = "technology"
+        self.difficulty = "medium"
         self.secret = ""
         self.guessed = set()
         self.wrong = set()
@@ -18,7 +19,7 @@ class HangmanGame:
         self.secret = random.choice(WORDS[self.category])
         self.guessed.clear()
         self.wrong.clear()
-        self.lives = 6
+        self.lives = {"easy": 8, "medium": 6, "hard": 4}[self.difficulty]
         self.hint_used = False
 
     def masked(self):
@@ -63,7 +64,8 @@ class HangmanGame:
 
         if self.won():
             self.streak += 1
-            self.score += 5 + self.streak
+            base_score = {"easy": 3, "medium": 5, "hard": 7}[self.difficulty]
+            self.score += base_score + self.streak
             self.stats.record(True, self.streak)
             print("Solved:", self.secret)
             return True
@@ -85,6 +87,14 @@ class HangmanGame:
                 print("Unknown category.")
                 continue
             self.category = raw
+            print("Difficulty: easy, medium, hard")
+            difficulty = input("Choose difficulty: ").strip().lower()
+
+            if difficulty not in ("easy", "medium", "hard"):
+                print("Unknown difficulty.")
+                continue
+
+            self.difficulty = difficulty
             if not self.play_round():
                 return
             again = input("Another round? [y/n]: ").strip().lower()
